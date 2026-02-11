@@ -106,6 +106,11 @@
       background-color: var(--app-color);
       box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
     }
+    
+    .btn-purple {
+      background-color: #9b59b6;
+      box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+    }
 
     .btn:hover {
       opacity: 0.9;
@@ -117,7 +122,7 @@
       padding: 40px 20px;
       color: #666;
       font-size: 0.9rem;
-      background-color: #fafafa; /* フッター背景色を少し変更 */
+      background-color: #fafafa;
       border-top: 1px solid #eee;
       margin-top: 40px;
       border-radius: 0 0 12px 12px;
@@ -138,24 +143,35 @@
       margin-left: 5px;
     }
 
-    .qr-section {
-        margin-bottom: 20px;
+    /* トップQRコードエリアのデザイン */
+    .top-qr-area {
+        background-color: #eef6fc;
+        border: 2px dashed #005bac;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 40px;
     }
-    
+    .top-qr-title {
+        color: #005bac;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
     .qr-img {
-        width: 140px; /* 読み取りやすいサイズ */
+        width: 150px;
         height: auto;
-        border: 1px solid #ddd;
-        padding: 5px;
-        background: white;
+        border: 4px solid white;
         border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     @media (max-width: 600px) {
       header h1 { font-size: 1.5rem; }
-      header p { font-size: 1rem; }
+      header p { font-size: 1.0rem; }
       .container { padding: 25px 20px; }
       .btn { width: 100%; }
+      /* スマホで見ている時はトップのQRコードは大きすぎるので少し控えめに、あるいは非表示でも良いですが今回は残します */
     }
   </style>
 </head>
@@ -168,6 +184,14 @@
   </header>
 
   <div class="container">
+    
+    <!-- トップQRコードエリア -->
+    <div class="top-qr-area">
+        <div class="top-qr-title">👇 お手元のスマホでデモを体験できます 👇</div>
+        <img src="QR_810399.png" alt="サイトへのQRコード" class="qr-img">
+        <div style="font-size: 0.9rem; color: #555; margin-top: 5px;">カメラで読み取ってアクセスしてください</div>
+    </div>
+
     <div class="intro">
       <h2 style="margin-top:0; font-size: 1.4rem;">自治会の担い手不足解決！</h2>
       「役員の負担を減らしたい」「地域活動をもっと楽しみたい」...<br>
@@ -202,11 +226,18 @@
       <li><strong>情報の資産化：</strong> 地域の歩みをデジタルアーカイブとして残し、いつでもスマホで振り返ることができます。</li>
     </ul>
 
+    <h2>4. 声を集めるのが「楽しく」なるアンケート</h2>
+    <p>「住民の意見を聞きたいけれど、集計が大変...」そんな悩みもGoogle フォームで解決します。</p>
+    <ul>
+      <li><strong>配布・回収が不要：</strong> スマホで回答してもらうだけ。紙を配る手間も、回収に回る時間もゼロに。</li>
+      <li><strong>自動でグラフ化：</strong> 回答結果は「Google スプレッドシート」に自動で蓄積され、瞬時に見やすいグラフになります。</li>
+      <li><strong>集計作業ゼロ：</strong> 「正」の字を書いて数える作業から解放され、集まった声をすぐに活動に活かせます。</li>
+    </ul>
+    <div class="btn-group" style="margin-top:10px;">
+        <a href="survey.html" class="btn btn-purple" style="background-color: #9b59b6; box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);">アンケート集計デモを試す</a>
+    </div>
+
     <footer>
-      <div class="qr-section">
-          <p style="margin-bottom: 8px; font-weight: bold; color: #005bac;">スマホで簡単アクセス</p>
-          <img src="QR_810399.png" alt="サイトへのQRコード" class="qr-img">
-      </div>
       自治会DX推進プロジェクト (tenet-tech.net)<br>
       持続可能な地域コミュニティの実現へ
     </footer>

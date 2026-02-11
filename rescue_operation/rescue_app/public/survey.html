@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アンケート自動集計デモ - 自治会DX</title>
+    <style>
+        :root {
+            --primary: #005bac;
+            --accent: #ff9800;
+            --bg: #f4f7f9;
+            --chart-1: #4285f4; /* Google Blue */
+            --chart-2: #db4437; /* Google Red */
+            --chart-3: #f4b400; /* Google Yellow */
+        }
+        body { font-family: sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        /* ヘッダー */
+        h1 { color: var(--primary); text-align: center; font-size: 1.5rem; margin-bottom: 30px; }
+        
+        /* 2カラムレイアウト（スマホでは縦並び） */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+        /* カード共通 */
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .card-header { font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* 回答画面（左） */
+        .form-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; }
+        .radio-label { display: block; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
+        .radio-label:hover { background: #f9f9f9; }
+        input[type="radio"]:checked + span { font-weight: bold; color: var(--primary); }
+        
+        .btn-submit { 
+            width: 100%; padding: 15px; background: var(--primary); color: white; 
+            border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; 
+            cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,91,172,0.3); 
+        }
+        .btn-submit:active { transform: translateY(2px); }
+
+        /* 結果画面（右） */
+        .chart-box { margin-top: 20px; }
+        .bar-group { margin-bottom: 15px; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
+        .bar-bg { background: #eee; height: 20px; border-radius: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; transition: width 0.5s cubic-bezier(0.4, 0.0, 0.2, 1); }
+        
+        .c1 { background-color: var(--chart-1); }
+        .c2 { background-color: var(--chart-2); }
+        .c3 { background-color: var(--chart-3); }
+
+        .count-badge { background: #333; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; }
+        
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; opacity: 0; transition: 0.3s; pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        
+        .note { font-size: 0.85rem; color: #666; margin-top: 20px; background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 5px solid var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📝 アンケート自動集計デモ</h1>
+    
+    <div class="grid">
+        <!-- 1. 住民の回答画面 -->
+        <div class="card">
+            <div class="card-header">
+                <span style="font-size:1.5rem;">📱</span> 住民のスマホ画面
+            </div>
+            <div class="form-title">Q. 次回の清掃活動、希望の日程は？</div>
+            <form id="demoForm" onsubmit="return false;">
+                <label class="radio-label">
+                    <input type="radio" name="vote" value="A"> <span>土曜日の午前</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="vote" value="B"> <span>日曜日の午前</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="vote" value="C"> <span>平日の夕方</span>
+                </label>
+                <button class="btn-submit" onclick="submitVote()">回答を送信</button>
+            </form>
+        </div>
+
+        <!-- 2. 会長の確認画面 -->
+        <div class="card">
+            <div class="card-header">
+                <span style="font-size:1.5rem;">💻</span> 会長の管理画面
+            </div>
+            <p style="font-size:0.9rem; color:#666; margin:0;">回答されると、グラフが自動で伸びます。</p>
+            
+            <div class="chart-box">
+                <div class="bar-group">
+                    <div class="bar-label">
+                        <span>土曜日の午前</span>
+                        <!-- ここに票数と％を表示 -->
+                        <span class="count-badge" id="count-A">12票 (60%)</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill c1" id="bar-A" style="width: 60%"></div></div>
+                </div>
+
+                <div class="bar-group">
+                    <div class="bar-label">
+                        <span>日曜日の午前</span>
+                        <span class="count-badge" id="count-B">5票 (25%)</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill c2" id="bar-B" style="width: 25%"></div></div>
+                </div>
+
+                <div class="bar-group">
+                    <div class="bar-label">
+                        <span>平日の夕方</span>
+                        <span class="count-badge" id="count-C">3票 (15%)</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill c3" id="bar-C" style="width: 15%"></div></div>
+                </div>
+                
+                <div style="text-align:right; font-size:0.9rem; margin-top:15px; font-weight:bold;">
+                    回答総数: <span id="total-count" style="font-size:1.2rem; color:#005bac;">20</span> 件
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="note">
+        <strong>💡 ここがポイント</strong><br>
+        Google フォームを使えば、このように「誰かが回答した瞬間」に自動で集計されます。<br>
+        役員が集まって「正」の字を書いて数える作業は、もう必要ありません。
+    </div>
+    
+    <div style="text-align:center; margin-top:30px;">
+        <a href="index.html" style="color:#005bac; text-decoration:none; font-weight:bold;">← サイトトップに戻る</a>
+    </div>
+</div>
+
+<div class="toast" id="toast">✅ 回答を受信！グラフを自動更新しました</div>
+
+<script>
+    // 初期値
+    let votes = { A: 12, B: 5, C: 3 };
+
+    function updateCharts() {
+        const total = votes.A + votes.B + votes.C;
+        
+        // パーセント計算（整数丸め）
+        const perA = Math.round(votes.A / total * 100);
+        const perB = Math.round(votes.B / total * 100);
+        const perC = Math.round(votes.C / total * 100);
+
+        // 表記更新：票数 (パーセント%)
+        document.getElementById('count-A').innerText = `${votes.A}票 (${perA}%)`;
+        document.getElementById('count-B').innerText = `${votes.B}票 (${perB}%)`;
+        document.getElementById('count-C').innerText = `${votes.C}票 (${perC}%)`;
+        document.getElementById('total-count').innerText = total;
+
+        // グラフの長さ更新
+        document.getElementById('bar-A').style.width = perA + "%";
+        document.getElementById('bar-B').style.width = perB + "%";
+        document.getElementById('bar-C').style.width = perC + "%";
+    }
+
+    function submitVote() {
+        // 選択されているラジオボタンを取得
+        const selected = document.querySelector('input[name="vote"]:checked');
+        
+        if (!selected) {
+            alert("選択肢を選んでください");
+            return;
+        }
+
+        // 票を加算
+        const val = selected.value;
+        votes[val]++;
+        
+        // グラフ更新
+        updateCharts();
+
+        // 通知表示
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        
+        // 選択解除（連続デモ用）
+        selected.checked = false;
+    }
+</script>
+
+</body>
+</html>

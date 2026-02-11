@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>持続可能な自治会運営へ - 楽しく、楽に、次世代へ繋ぐ</title>
+  <style>
+    :root {
+      --primary-color: #005bac;
+      --accent-color: #ff9800;
+      --app-color: #3498db; 
+      --bg-color: #f4f7f9;
+      --text-color: #333;
+    }
+
+    body {
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      line-height: 1.8;
+      color: var(--text-color);
+      max-width: 950px;
+      margin: 0 auto;
+      padding: 0;
+      background-color: var(--bg-color);
+    }
+
+    header {
+      background: linear-gradient(135deg, #005bac 0%, #003a70 100%);
+      color: white;
+      padding: 50px 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .container {
+      background: white;
+      margin: -30px 20px 40px;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2, h3 {
+      color: var(--primary-color);
+    }
+
+    header h1 {
+      color: white;
+      margin: 0;
+      font-size: 2rem; 
+      letter-spacing: 1px;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .highlight {
+      color: var(--accent-color);
+    }
+
+    .intro {
+      font-size: 1.15rem;
+      color: #555;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 25px;
+      margin-bottom: 35px;
+    }
+
+    .box {
+      background: #f9f9f9;
+      border-left: 6px solid var(--primary-color);
+      padding: 25px;
+      margin: 25px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .box.app {
+      border-left-color: var(--app-color);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 30px;
+      background-color: var(--accent-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    .btn-app {
+      background-color: var(--app-color);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 0.9rem;
+      background-color: #fafafa; /* フッター背景色を少し変更 */
+      border-top: 1px solid #eee;
+      margin-top: 40px;
+      border-radius: 0 0 12px 12px;
+    }
+
+    strong {
+      color: var(--primary-color);
+    }
+
+    .free-badge {
+      display: inline-block;
+      background-color: #e74c3c;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+
+    .qr-section {
+        margin-bottom: 20px;
+    }
+    
+    .qr-img {
+        width: 140px; /* 読み取りやすいサイズ */
+        height: auto;
+        border: 1px solid #ddd;
+        padding: 5px;
+        background: white;
+        border-radius: 4px;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      header p { font-size: 1rem; }
+      .container { padding: 25px 20px; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>持続可能な自治会運営へ</h1>
+    <p>デジタルで<span class="highlight">「楽しく、楽に」</span>次世代へ繋ぐ</p>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <h2 style="margin-top:0; font-size: 1.4rem;">自治会の担い手不足解決！</h2>
+      「役員の負担を減らしたい」「地域活動をもっと楽しみたい」...<br>
+      デジタルは、私たちの活動を<strong>「楽しく、楽に」</strong>するための心強い味方です。<br>
+      無理なく、笑顔で続けられる<strong>持続可能な自治会</strong>の形をご提案します。
+    </div>
+
+    <h2>1. ページをめくるのが「楽しく」なる広報誌</h2>
+    <div class="box">
+      <h3 style="margin-top:0;">スマホで拡大、どこでも読めるデジタル版</h3>
+      <p>「文字が見にくい」という不安を解消。スライダーを使って自由自在に拡大でき、誰でも操作できる「楽」で「楽しい」体験をデモでご覧いただけます。</p>
+      <div class="btn-group">
+        <a href="sample-book/index.html" class="btn">デジタル広報デモを試す</a>
+      </div>
+    </div>
+
+    <h2>2. 自治会アプリ：次世代の地域ネットワーク（開発中）</h2>
+    <div class="box app">
+      <h3 style="margin-top:0;">集計を「楽」にする出欠確認・案内</h3>
+      <p>ボタン一つで回答が完了。役員の集計作業も自動化されます。アプリの導入に向けた計画と、実際の出欠確認の使い心地を体験してください。</p>
+      <div class="btn-group">
+        <a href="app.html" class="btn btn-app">開発ロードマップ</a>
+        <a href="attendance.html" class="btn btn-app" style="background-color: #2ecc71; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);">出欠回答サンプル</a>
+      </div>
+    </div>
+
+    <h2>3. 誰でも作れる、繋がるホームページ</h2>
+    <p>専門知識がなくても、自治会独自の情報発信拠点を維持できる仕組みをご提案します。</p>
+    <ul>
+      <li><strong>AIとの共同作業：</strong> 自治会長とAI（Gemini）が対話しながら、プログラミング不要で簡単にサイトを構築。引き継ぎの壁をなくします。</li>
+      <li><strong>Google Workspaceの活用 <span class="free-badge">自治会は無料</span>：</strong> 非営利団体向けに無料で提供される「Google Workspace」を活用。Google ドライブに保存するだけで自動公開でき、誰でも「楽に」管理が可能です。</li>
+      <li><strong>情報の資産化：</strong> 地域の歩みをデジタルアーカイブとして残し、いつでもスマホで振り返ることができます。</li>
+    </ul>
+
+    <footer>
+      <div class="qr-section">
+          <p style="margin-bottom: 8px; font-weight: bold; color: #005bac;">スマホで簡単アクセス</p>
+          <img src="QR_810399.png" alt="サイトへのQRコード" class="qr-img">
+      </div>
+      自治会DX推進プロジェクト (tenet-tech.net)<br>
+      持続可能な地域コミュニティの実現へ
+    </footer>
+  </div>
+
+</body>
+</html>

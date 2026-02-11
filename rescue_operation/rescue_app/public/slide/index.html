@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自治会DX解説動画 - 持続可能なご提案</title>
+    <style>
+        :root {
+            --primary-blue: #005bac;
+            /* オレンジ色を少し落ち着いた色味（キャロットオレンジ）に変更 */
+            --accent-orange: #e67e22; 
+            --bg-light: #f4f7f9;
+            --text-dark: #333;
+            --white: #ffffff;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: #000;
+            color: var(--text-dark);
+            overflow: hidden;
+        }
+
+        #video-canvas {
+            width: 100vw;
+            height: 56.25vw; 
+            max-height: 100vh;
+            max-width: 177.78vh;
+            margin: auto;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        #slide-view {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            width: 90%;
+            height: 80%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-out;
+            transform: translateY(20px);
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1 { font-size: 3.2rem; color: var(--primary-blue); margin-bottom: 20px; font-weight: bold; }
+        h2 { font-size: 2.4rem; color: var(--primary-blue); border-bottom: 5px solid var(--accent-orange); padding-bottom: 10px; margin-bottom: 30px; font-weight: bold; }
+        p { font-size: 1.7rem; line-height: 1.6; max-width: 900px; color: #444; }
+        
+        .highlight { color: var(--accent-orange); font-weight: bold; }
+
+        /* ナレーション字幕エリア */
+        #caption-area {
+            height: 140px;
+            background-color: rgba(20, 20, 25, 0.95);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 50px;
+            font-size: 1.6rem;
+            text-align: center;
+            border-top: 4px solid var(--accent-orange);
+            font-weight: 500;
+        }
+
+        /* プログレスバー（3px） */
+        #progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background-color: var(--accent-orange);
+            width: 0%;
+            transition: width linear;
+            z-index: 2000;
+        }
+
+        /* コントロールエリア */
+        #controls {
+            position: absolute;
+            bottom: 160px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            align-items: center;
+        }
+
+        /* スライド選択プルダウン */
+        #slide-selector {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            cursor: pointer;
+        }
+
+        .ctrl-btn {
+            background: var(--primary-blue);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .ctrl-btn:active { transform: scale(0.95); }
+        .ctrl-btn-sub { background: #666; font-size: 0.9rem; padding: 10px 15px; }
+
+        .two-col { display: flex; gap: 40px; text-align: left; width: 100%; margin-top: 20px; }
+        .col { flex: 1; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--primary-blue); }
+        .col h3 { color: var(--primary-blue); margin-top: 0; font-size: 1.4rem; }
+    </style>
+</head>
+<body>
+
+<div id="video-canvas">
+    <div id="progress-bar"></div>
+    
+    <div id="slide-view">
+        <!-- Slide 1 -->
+        <div class="slide active" data-title="1. オープニング" data-duration="6000" data-script="自治会の皆様、本日は、持続可能な自治会運営に向けた新しい仕組みをご提案させていただきます。キーワードは、『楽しく、楽に』。次世代へ繋ぐための第一歩です。">
+            <h1>持続可能な自治会運営へ</h1>
+            <p class="highlight" style="font-size: 2.2rem;">～デジタルで「楽しく、楽に」次世代へ～</p>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide" data-title="2. 課題と解決" data-duration="7000" data-script="現在、役員のなり手不足が大きな課題となっています。その背景には、重すぎる事務負担があります。デジタルを導入することで、この負担を大幅に削り、活動を『楽』にします。">
+            <h2>自治会の担い手不足を解決！</h2>
+            <p>「役員の負担を減らしたい」「地域活動をもっと楽しみたい」<br>
+               そんな想いを実現し、無理なく笑顔で続けられる<br><strong>持続可能な自治会</strong>の形をご提案します。</p>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide" data-title="3. デジタル広報誌" data-duration="8000" data-script="まず1つ目は、スライダーで文字を自由自在に大きくできるデジタル広報誌です。スマホ一台あれば、配布の手間もなく、誰でも自分の視力に合わせて『楽しく』読むことができます。">
+            <h2>1. 楽しく、見やすいデジタル広報誌</h2>
+            <div class="two-col">
+                <div class="col">
+                    <h3>配布をゼロに</h3>
+                    <p style="font-size: 1.1rem;">印刷・仕分け・配布という物理的な負担をなくします。</p>
+                </div>
+                <div class="col">
+                    <h3>拡大スライダー</h3>
+                    <p style="font-size: 1.1rem;">自分の読みやすいサイズに無段階で調整。誰にでも優しい設計です。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide" data-title="4. 自治会アプリ" data-duration="8000" data-script="2つ目は自治会アプリです。これまで班長さんが一軒一軒回っていた出欠確認も、スマホ一つで完了。私としんさんが、AI（Gemini）と対話しながら作り上げている、地域の強い味方です。">
+            <h2>2. 集計を「楽」にするアプリ</h2>
+            <p>ボタン一つで回答完了。集計はAIにお任せ。<br>
+               自治会長とAIが<strong>ノーコード（対話）</strong>で協力して構築する、<br>地域密着型のネットワークです。</p>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide" data-title="5. コストと運用" data-duration="8000" data-script="コストの心配もありません。自治会なら、プロが使うGoogle Workspaceを無料で導入できます。お金をかけず、最新の技術を『最高の部下』として使いこなし、持続可能な運営を始めましょう。">
+            <h2>3. 費用ゼロで持続可能に</h2>
+            <p><strong>Google Workspaceの活用（自治会は無料）</strong><br>
+               Google ドライブへ保存するだけで、情報のアーカイブ化が完了。<br>
+               「どこだっけ？」という探し物の時間をゼロにします。</p>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide" data-title="6. エンディング" data-duration="5000" data-script="ご清聴ありがとうございました。地域の皆様が笑顔になれる未来を、ここから共に歩んでいきましょう。">
+            <h1>ご清聴ありがとうございました</h1>
+            <p class="highlight" style="font-size: 2rem;">持続可能な自治会運営へ<br>tenet-tech.net</p>
+        </div>
+    </div>
+
+    <div id="caption-area">
+        <div id="script-text"></div>
+    </div>
+
+    <div id="controls">
+        <!-- スライド指定用プルダウン -->
+        <select id="slide-selector" onchange="jumpToSlide(this.value)">
+            <!-- JSで生成 -->
+        </select>
+        <button class="ctrl-btn" onclick="togglePlay()" id="play-btn">▶ 再生</button>
+        <button class="ctrl-btn ctrl-btn-sub" onclick="resetVideo()">🔄 最初</button>
+    </div>
+</div>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progress-bar');
+    const scriptText = document.getElementById('script-text');
+    const playBtn = document.getElementById('play-btn');
+    const selector = document.getElementById('slide-selector');
+    
+    let currentIndex = 0;
+    let isPlaying = false;
+    let slideTimer;
+
+    // プルダウンの生成
+    slides.forEach((slide, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.text = slide.getAttribute('data-title') || `スライド ${index + 1}`;
+        selector.appendChild(option);
+    });
+
+    function updateSlide() {
+        slides.forEach((s, i) => {
+            s.classList.remove('active');
+            if (i === currentIndex) s.classList.add('active');
+        });
+
+        // プルダウンも同期
+        selector.value = currentIndex;
+
+        const currentSlide = slides[currentIndex];
+        const duration = parseInt(currentSlide.getAttribute('data-duration'));
+        const script = currentSlide.getAttribute('data-script');
+
+        scriptText.innerText = script;
+        progressBar.style.transition = 'none';
+        progressBar.style.width = '0%';
+        
+        if (isPlaying) {
+            setTimeout(() => {
+                progressBar.style.transition = `width ${duration}ms linear`;
+                progressBar.style.width = '100%';
+            }, 50);
+
+            slideTimer = setTimeout(() => {
+                if (currentIndex < slides.length - 1) {
+                    currentIndex++;
+                    updateSlide();
+                } else {
+                    isPlaying = false;
+                    playBtn.innerText = '▶ 再生';
+                }
+            }, duration);
+        }
+    }
+
+    function togglePlay() {
+        if (isPlaying) {
+            isPlaying = false;
+            playBtn.innerText = '▶ 再生';
+            clearTimeout(slideTimer);
+            progressBar.style.width = '0%';
+            progressBar.style.transition = 'none';
+        } else {
+            isPlaying = true;
+            playBtn.innerText = '|| 一時停止';
+            updateSlide();
+        }
+    }
+
+    function resetVideo() {
+        clearTimeout(slideTimer);
+        currentIndex = 0;
+        isPlaying = false;
+        playBtn.innerText = '▶ 再生';
+        updateSlide();
+    }
+
+    // プルダウンからのジャンプ
+    function jumpToSlide(index) {
+        currentIndex = parseInt(index);
+        isPlaying = false;
+        playBtn.innerText = '▶ 再生';
+        clearTimeout(slideTimer);
+        updateSlide();
+    }
+
+    updateSlide();
+</script>
+
+</body>
+</html>

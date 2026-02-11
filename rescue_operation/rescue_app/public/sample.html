@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出欠確認サンプル - 自治会DX</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 600px; margin: auto; background-color: #f9f9f9; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; font-size: 1.2em; border-left: 4px solid #3498db; padding-left: 10px; }
+        .event-info { background: #e8f4fd; padding: 10px; border-radius: 5px; margin: 15px 0; font-size: 0.9em; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        button { flex: 1; padding: 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1em; }
+        .btn-present { background-color: #27ae60; color: white; }
+        .btn-absent { background-color: #e74c3c; color: white; }
+        .list-section { margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #eee; }
+        .status-ok { color: #27ae60; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>【サンプル】2月度 〇〇〇の会議案内 出欠確認</h1>
+
+        <div class="event-info">
+            <strong>日時：</strong> 2026年2月20日 19:00〜<br>
+            <strong>場所：</strong> コミュニティーセンター 2F 会議室
+        </div>
+
+        <p>回答を選択してください：</p>
+        <div class="btn-group">
+            <button class="btn-present" onclick="answer('出席')">出席</button>
+            <button class="btn-absent" onclick="answer('欠席')">欠席</button>
+        </div>
+
+        <div class="list-section">
+            <h3>現在の出欠状況（ダミーデータ）</h3>
+            <table>
+                <tr><th>世帯名</th><th>回答</th></tr>
+                <tr><td>田中（1区）</td><td class="status-ok">出席</td></tr>
+                <tr><td>佐藤（2区）</td><td class="status-ok">出席</td></tr>
+                <tr><td>鈴木（1区）</td><td>欠席</td></tr>
+                <tr><td>高橋（3区）</td><td class="status-ok">出席</td></tr>
+            </table>
+        </div>
+
+        <p><a href="app.html" style="display:block; margin-top:20px; text-align:center;">← 開発ロードマップへ戻る</a></p>
+
+    </div>
+
+    <script>
+        function answer(status) {
+            alert(status + " で送信しました！\n（実際の運用では役員の集計表に即座に反映されます）");
+        }
+    </script>
+</body>
+</html>

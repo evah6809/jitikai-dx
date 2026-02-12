@@ -112,6 +112,11 @@
       box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
     }
 
+    .btn-red {
+      background-color: #d32f2f;
+      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    }
+
     .btn:hover {
       opacity: 0.9;
       transform: translateY(-2px);
@@ -143,27 +148,17 @@
       margin-left: 5px;
     }
 
-    /* トップQRコードエリアのデザイン */
-    .top-qr-area {
-        background-color: #eef6fc;
-        border: 2px dashed #005bac;
-        border-radius: 8px;
-        padding: 20px;
-        text-align: center;
-        margin-bottom: 40px;
+    .qr-section {
+        margin-bottom: 20px;
     }
-    .top-qr-title {
-        color: #005bac;
-        font-weight: bold;
-        font-size: 1.1rem;
-        margin-bottom: 10px;
-    }
+    
     .qr-img {
-        width: 150px;
+        width: 140px;
         height: auto;
-        border: 4px solid white;
+        border: 1px solid #ddd;
+        padding: 5px;
+        background: white;
         border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     @media (max-width: 600px) {
@@ -171,7 +166,6 @@
       header p { font-size: 1.0rem; }
       .container { padding: 25px 20px; }
       .btn { width: 100%; }
-      /* スマホで見ている時はトップのQRコードは大きすぎるので少し控えめに、あるいは非表示でも良いですが今回は残します */
     }
   </style>
 </head>
@@ -185,13 +179,6 @@
 
   <div class="container">
     
-    <!-- トップQRコードエリア -->
-    <div class="top-qr-area">
-        <div class="top-qr-title">👇 お手元のスマホでデモを体験できます 👇</div>
-        <img src="QR_810399.png" alt="サイトへのQRコード" class="qr-img">
-        <div style="font-size: 0.9rem; color: #555; margin-top: 5px;">カメラで読み取ってアクセスしてください</div>
-    </div>
-
     <div class="intro">
       <h2 style="margin-top:0; font-size: 1.4rem;">自治会の担い手不足解決！</h2>
       「役員の負担を減らしたい」「地域活動をもっと楽しみたい」...<br>
@@ -237,7 +224,23 @@
         <a href="survey.html" class="btn btn-purple" style="background-color: #9b59b6; box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);">アンケート集計デモを試す</a>
     </div>
 
+    <!-- 追加セクション：避難所ナビ -->
+    <h2>5. 命を守る「避難所ナビ」マップ</h2>
+    <p>「この地区の人はどこへ逃げる？」を明確に。看板設置よりも確実に、住民を安全な場所へ誘導します。</p>
+    <ul>
+      <li><strong>地区から検索：</strong> マップで探す前に、「自分の地区」を選ぶだけで、行くべき避難所を表示します。</li>
+      <li><strong>徒歩ルート表示：</strong> 災害時は車が使えないことを想定し、現在地からの「徒歩ルート」と「距離」を瞬時に示します。</li>
+      <li><strong>会長による管理：</strong> 避難所の収容人数や対象地区を、会長自身が現地で確認して登録・更新できます。</li>
+    </ul>
+    <div class="btn-group" style="margin-top:10px;">
+        <a href="map.html" class="btn btn-red">避難所ナビのデモを見る</a>
+    </div>
+
     <footer>
+      <div class="qr-section">
+          <p style="margin-bottom: 8px; font-weight: bold; color: #005bac;">スマホで簡単アクセス</p>
+          <img src="QR_810399.png" alt="サイトへのQRコード" class="qr-img">
+      </div>
       自治会DX推進プロジェクト (tenet-tech.net)<br>
       持続可能な地域コミュニティの実現へ
     </footer>

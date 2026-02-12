@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>避難所ナビ（大宮地区） - 自治会DX</title>
+    
+    <!-- Leaflet.js（無料の地図システム） -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        :root {
+            --primary: #d32f2f;
+            --accent: #fbc02d;
+            --bg: #f4f7f9;
+        }
+        body { font-family: "Helvetica Neue", Arial, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: #333; height: 100vh; display: flex; flex-direction: column; }
+        
+        header { background: var(--primary); color: white; padding: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 20; display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; font-size: 1.1rem; flex-grow: 1; }
+
+        /* 管理者スイッチ */
+        .admin-btn { font-size: 0.8rem; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); padding: 5px 10px; border-radius: 4px; color: white; cursor: pointer; }
+
+        /* 地図本体 */
+        #map { flex: 1; width: 100%; z-index: 1; }
+        .leaflet-bottom { z-index: 10 !important; }
+
+        /* 地区検索バー */
+        .region-search-bar {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            z-index: 900;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .region-select {
+            flex: 1;
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* 避難所情報カード */
+        .shelter-card {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%);
+            width: 90%; max-width: 400px; background: white; border-radius: 12px;
+            padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+        }
+        .shelter-card.show { transform: translateX(-50%) translateY(0); }
+        
+        .shelter-name { font-size: 1.2rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
+        .shelter-info { font-size: 0.9rem; color: #666; margin-bottom: 15px; }
+        .shelter-badge { display: inline-block; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; color:#333; }
+
+        .btn-route {
+            width: 100%; padding: 12px; background: var(--primary); color: white;
+            border: none; border-radius: 8px; font-size: 1rem; font-weight: bold;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none;
+        }
+
+        /* 現在地ボタン */
+        .gps-btn {
+            position: absolute; bottom: 30px; right: 20px; z-index: 900;
+            background: white; width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            cursor: pointer; border: none;
+        }
+
+        /* モーダル（管理者用） */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: none; z-index: 2000;
+            align-items: center; justify-content: center;
+        }
+        .modal { background: white; padding: 25px; border-radius: 12px; width: 85%; max-width: 400px; }
+        .modal input, .modal select { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        
+        .gps-regist-btn {
+            background: #e3f2fd; color: #0d47a1; border: 1px dashed #0d47a1;
+            width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px;
+            cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+
+        .modal-btns { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-modal { flex: 1; padding: 10px; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; }
+
+        .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 30px; font-size: 0.9rem; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 3000; }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" style="color:white; text-decoration:none; font-size:1.2rem;">🏠</a>
+    <h1>避難所ナビ (大宮地区)</h1>
+    <button class="admin-btn" onclick="toggleAdmin()">⚙️ 管理者</button>
+</header>
+
+<!-- 地区検索バー -->
+<div class="region-search-bar">
+    <select id="user-region" class="region-select">
+        <option value="">🏠 お住まいの地区を選択...</option>
+        <option value="jingu">池内・南方 方面</option>
+        <option value="ikeda">平和が丘 方面</option>
+        <option value="hana">神宮・下北方 方面</option>
+    </select>
+    <button class="search-btn" onclick="searchByRegion()">🔍</button>
+</div>
+
+<!-- 地図エリア -->
+<div id="map"></div>
+
+<!-- 現在地へ移動ボタン -->
+<button class="gps-btn" onclick="locateUser()">📍</button>
+
+<!-- 避難所情報カード -->
+<div class="shelter-card" id="shelter-card">
+    <div class="shelter-name" id="card-name">避難所名</div>
+    <div class="shelter-info">
+        <span class="shelter-badge">対象: <span id="card-region">-</span></span>
+    </div>
+    <div style="font-size:0.9rem; margin-bottom:10px;">
+        現在地からの直線距離：<strong id="card-dist">---</strong>
+    </div>
+    <!-- Googleマップへのリンク -->
+    <a id="nav-link" href="#" target="_blank" class="btn-route">
+        <span>🚶</span> Googleマップで経路案内
+    </a>
+    <button onclick="closeCard()" style="width:100%; margin-top:10px; padding:8px; background:#eee; border:none; border-radius:6px;">閉じる</button>
+</div>
+
+<!-- 管理者用 追加モーダル -->
+<div class="modal-overlay" id="admin-modal">
+    <div class="modal">
+        <h3>📍 地点を追加（管理者）</h3>
+        
+        <button class="gps-regist-btn" onclick="fillCurrentLocation()">
+            <span>📡</span> 今いる場所の座標を取得
+        </button>
+
+        <label style="font-size:0.8rem; font-weight:bold;">場所の種類</label>
+        <select id="new-type">
+            <option value="office">🏢 役所・事務所</option>
+            <option value="school">🏫 避難所</option>
+            <option value="water">💧 給水所・井戸</option>
+            <option value="danger">⚠️ 危険箇所</option>
+            <option value="store">📦 備蓄倉庫</option>
+        </select>
+
+        <input type="text" id="new-name" placeholder="名称（例：第1備蓄倉庫）">
+        <input type="text" id="new-region-tag" placeholder="対象地区（例：jingu）※任意">
+        
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="new-lat" placeholder="緯度" readonly style="background:#f5f5f5; font-size:0.8rem;">
+            <input type="text" id="new-lng" placeholder="経度" readonly style="background:#f5f5f5; font-size:0.8rem;">
+        </div>
+
+        <div class="modal-btns">
+            <button class="btn-modal" style="background:#eee;" onclick="closeModal()">キャンセル</button>
+            <button class="btn-modal" style="background:var(--primary); color:white;" onclick="savePin()">保存</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">✅ 情報を登録しました</div>
+
+<script>
+    let map;
+    let userMarker = null;
+    let isAdmin = false;
+    let tempLat = null;
+    let tempLng = null;
+    let userLat = null;
+    let userLng = null;
+
+    // ★★★ここが初期位置（大宮地域事務所）★★★
+    const CENTER_LAT = 31.945506824508666;
+    const CENTER_LNG = 131.41746327456045;
+
+    // 大宮地区周辺のデータ（デモ用）
+    const pins = [
+        // 地域事務所（中心）
+        { type: 'office', name: '大宮地域事務所', lat: CENTER_LAT, lng: CENTER_LNG, targetRegion: '', regionName: '拠点' },
+        
+        // 周辺施設（ダミー位置です。必要に応じて微調整してください）
+        { type: 'school', name: '大宮小学校 体育館', lat: 31.9390, lng: 131.4240, targetRegion: 'jingu', regionName: '南方' },
+        { type: 'school', name: '大宮公民館', lat: 31.9420, lng: 131.4260, targetRegion: 'hana', regionName: '下北方' },
+        { type: 'store', name: '平和が丘 備蓄倉庫', lat: 31.9550, lng: 131.4100, targetRegion: 'ikeda', regionName: '平和が丘' },
+        { type: 'water', name: '災害協力井戸（池田宅）', lat: 31.9560, lng: 131.4110, targetRegion: 'ikeda', regionName: '神宮' }
+    ];
+
+    function init() {
+        // 大宮地域事務所を中心地図表示
+        map = L.map('map').setView([CENTER_LAT, CENTER_LNG], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        renderPins();
+
+        map.on('click', function(e) {
+            if (isAdmin) {
+                tempLat = e.latlng.lat;
+                tempLng = e.latlng.lng;
+                openModal(false);
+            }
+        });
+    }
+
+    function getIcon(type) {
+        let emoji = '📍';
+        if (type === 'school') emoji = '🏫';
+        if (type === 'water') emoji = '💧';
+        if (type === 'danger') emoji = '⚠️';
+        if (type === 'store') emoji = '📦';
+        if (type === 'office') emoji = '🏢';
+        
+        return L.divIcon({
+            className: 'custom-icon',
+            html: `<div style="font-size:2rem; text-shadow:0 2px 2px rgba(0,0,0,0.3);">${emoji}</div>`,
+            iconSize: [30, 30],
+            iconAnchor: [15, 30]
+        });
+    }
+
+    function renderPins() {
+        pins.forEach(p => {
+            const marker = L.marker([p.lat, p.lng], { icon: getIcon(p.type) }).addTo(map);
+            marker.on('click', () => {
+                showCard(p);
+            });
+            p.marker = marker;
+        });
+    }
+
+    function searchByRegion() {
+        const region = document.getElementById('user-region').value;
+        if (!region) {
+            alert("地区を選択してください");
+            return;
+        }
+
+        const target = pins.find(p => p.type === 'school' && p.targetRegion === region);
+
+        if (target) {
+            map.setView([target.lat, target.lng], 16);
+            showCard(target);
+            target.marker.openPopup();
+            showToast(`🏠 ${target.regionName} の避難所を表示しました`);
+        } else {
+            alert("その地区の指定避難所データが見つかりません");
+        }
+    }
+
+    function locateUser() {
+        if (!navigator.geolocation) { alert("GPS非対応"); return; }
+        showToast("📡 GPSで現在地を測位中...");
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                userLat = pos.coords.latitude;
+                userLng = pos.coords.longitude;
+                if (userMarker) map.removeLayer(userMarker);
+                userMarker = L.circleMarker([userLat, userLng], {
+                    radius: 8, fillColor: "#2196f3", color: "#fff", weight: 2, fillOpacity: 1
+                }).addTo(map);
+                map.setView([userLat, userLng], 16);
+                showToast("✅ 現在地を表示しました");
+            },
+            () => alert("位置情報を取得できませんでした")
+        );
+    }
+
+    function showCard(data) {
+        document.getElementById('card-name').innerText = data.name;
+        document.getElementById('card-region').innerText = data.regionName || "全域";
+        document.getElementById('shelter-card').classList.add('show');
+        
+        if (userLat) {
+            const dist = map.distance([userLat, userLng], [data.lat, data.lng]);
+            document.getElementById('card-dist').innerText = Math.round(dist) + " m";
+            const link = `https://www.google.com/maps/dir/?api=1&destination=${data.lat},${data.lng}&travelmode=walking`;
+            document.getElementById('nav-link').href = link;
+        } else {
+            document.getElementById('card-dist').innerText = "未取得";
+            document.getElementById('nav-link').href = "#";
+            document.getElementById('nav-link').onclick = function(e) {
+                if(this.getAttribute('href') === "#") {
+                    e.preventDefault();
+                    alert("まず右下の📍ボタンで現在地を取得してください");
+                }
+            }
+        }
+    }
+
+    function closeCard() { document.getElementById('shelter-card').classList.remove('show'); }
+
+    function toggleAdmin() {
+        isAdmin = !isAdmin;
+        const btn = document.querySelector('.admin-btn');
+        if (isAdmin) {
+            btn.style.background = '#e91e63';
+            showToast("管理者モード：地図タップまたはGPSで登録可能");
+        } else {
+            btn.style.background = 'rgba(255,255,255,0.2)';
+        }
+    }
+
+    function openModal(isGpsMode) {
+        document.getElementById('admin-modal').style.display = 'flex';
+        if (!isGpsMode && tempLat) {
+            document.getElementById('new-lat').value = tempLat.toFixed(6);
+            document.getElementById('new-lng').value = tempLng.toFixed(6);
+        }
+    }
+
+    function fillCurrentLocation() {
+        if (!navigator.geolocation) { alert("GPS不可"); return; }
+        document.querySelector('.gps-regist-btn span').innerText = "⏳ 測位中...";
+        navigator.geolocation.getCurrentPosition((pos) => {
+            document.getElementById('new-lat').value = pos.coords.latitude.toFixed(6);
+            document.getElementById('new-lng').value = pos.coords.longitude.toFixed(6);
+            document.querySelector('.gps-regist-btn span').innerText = "📡 完了";
+        });
+    }
+
+    function closeModal() {
+        document.getElementById('admin-modal').style.display = 'none';
+        document.getElementById('new-name').value = '';
+        document.querySelector('.gps-regist-btn span').innerText = "📡 今いる場所の座標を取得";
+    }
+
+    function savePin() {
+        const name = document.getElementById('new-name').value;
+        const lat = parseFloat(document.getElementById('new-lat').value);
+        const lng = parseFloat(document.getElementById('new-lng').value);
+        const type = document.getElementById('new-type').value;
+        const regionTag = document.getElementById('new-region-tag').value;
+
+        if (name && lat && lng) {
+            const newData = { name, lat, lng, type, targetRegion: regionTag, regionName: regionTag ? "指定あり" : "全域" };
+            const marker = L.marker([lat, lng], { icon: getIcon(type) }).addTo(map);
+            marker.on('click', () => showCard(newData));
+            newData.marker = marker;
+            pins.push(newData);
+
+            showToast("✅ 地点を登録しました");
+            closeModal();
+        } else {
+            alert("名称と座標が必要です");
+        }
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    init();
+</script>
+
+</body>
+</html>

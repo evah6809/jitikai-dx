@@ -249,10 +249,10 @@
     const pins = [
         { type: 'office', name: '大宮地域事務所', lat: CENTER_LAT, lng: CENTER_LNG, targetRegion: '', regionName: '拠点' },
         // 周辺施設（ダミー位置）
-        { type: 'school', name: '大宮小学校 体育館', lat: 31.9390, lng: 131.4240, targetRegion: 'jingu', regionName: '神宮・南方' },
+        { type: 'school', name: '大宮小学校 体育館', lat: 31.9390, lng: 131.4240, targetRegion: 'jingu', regionName: '池内地区・南方町' },
         { type: 'school', name: '大宮公民館', lat: 31.9420, lng: 131.4260, targetRegion: 'hana', regionName: '花ヶ島・下北方' },
-        { type: 'store', name: '平和が丘 備蓄倉庫', lat: 31.9550, lng: 131.4100, targetRegion: 'ikeda', regionName: '池田・平和が丘' },
-        { type: 'water', name: '災害協力井戸（池田宅）', lat: 31.9560, lng: 131.4110, targetRegion: 'ikeda', regionName: '池田' }
+        { type: 'store', name: '平和が丘 備蓄倉庫', lat: 31.9550, lng: 131.4100, targetRegion: 'ikeda', regionName: '池内団地・平和が丘' },
+        { type: 'water', name: '災害協力井戸（池田宅）', lat: 31.9560, lng: 131.4110, targetRegion: 'ikeda', regionName: '池内団地' }
     ];
 
     function init() {
@@ -443,12 +443,3 @@
 
 </body>
 </html>
-```
-
-### ✅ 最後にこれだけ！
-「見た目が修正された」というしんさんの努力を無駄にしないよう、以下のコマンドで確実にインターネット上のサイトを更新してください。
-
-```bash
-git add .
-git commit -m "避難所ナビの見た目と初期位置を修正"
-git push
